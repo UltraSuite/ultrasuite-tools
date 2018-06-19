@@ -13,13 +13,14 @@ audio and displaying the original prompt.
 
 # write a function to reduce ultrasound frame rate.
 import os
+import sys
 import subprocess
 import shutil
 import matplotlib.pyplot as plt
-from ultrasound_tools.transform_ultrasound import transform_raw_ult_to_world_multi_frames
-from ultrasound_tools.reshape_ultrasound import reshape_ultrasound_array
-from ultrasound_tools.read_core_files import *
-from ultrasound_tools.reshape_ultrasound import reduce_frame_rate
+from transform_ultrasound import transform_raw_ult_to_world_multi_frames
+from reshape_ultrasound import reshape_ultrasound_array
+from read_core_files import *
+from reshape_ultrasound import reduce_frame_rate
 
 
 def write_images_to_disk(ult_3d, directory, title=None):
@@ -138,7 +139,8 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
                                       number_of_vectors=int(param_df['NumVectors'].value),
                                       pixels_per_vector=int(param_df['PixPerVector'].value))
 
-    x = reduce_frame_rate(ult_3d=ult_3d, input_frame_rate=float(param_df['FramesPerSec'].value), output_frame_rate=frame_rate)
+    x = reduce_frame_rate(ult_3d=ult_3d, input_frame_rate=float(param_df['FramesPerSec'].value),
+                          output_frame_rate=frame_rate)
 
     y = transform_raw_ult_to_world_multi_frames(x, background_colour=0)
 
@@ -155,8 +157,8 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
 
 def main():
 
-    path = "/Users/acieleshky/Dropbox/Work/Ultrax2020/one_utterance/"
-    utterance_basename = "Ultrax_02TD1M_001"
+    path = sys.argv[1]
+    utterance_basename = sys.argv[2]
 
     prompt = os.path.join(path, utterance_basename + ".txt")
     wave = os.path.join(path, utterance_basename + ".wav")
