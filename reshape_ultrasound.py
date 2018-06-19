@@ -8,8 +8,8 @@ Author: Aciel Eshky
 """
 import sys
 import numpy as np
-from ultrasound_tools.read_core_files import parse_parameter_file, read_ultrasound_file
-from ultrasound_tools.visualise_ultrasound import display_2d_ultrasound_frame
+from read_core_files import parse_parameter_file, read_ultrasound_file
+from visualise_ultrasound import display_2d_ultrasound_frame
 
 
 def reshape_ultrasound_array(ult, output_dim, number_of_vectors=63, pixels_per_vector=412):

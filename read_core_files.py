@@ -1,3 +1,11 @@
+"""
+Functions to create an animation of an utterance.
+
+Date: Dec 2017
+Author: Aciel Eshky
+
+"""
+
 import numpy as np
 import pandas as pd
 from scipy.io import wavfile

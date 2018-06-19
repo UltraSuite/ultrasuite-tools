@@ -10,9 +10,9 @@ import math
 import numpy as np
 from scipy import ndimage
 import sys
-from ultrasound_tools.reshape_ultrasound import reshape_ultrasound_array
-from ultrasound_tools.read_core_files import parse_parameter_file, read_ultrasound_file
-from ultrasound_tools.visualise_ultrasound import display_2d_ultrasound_frame
+from reshape_ultrasound import reshape_ultrasound_array
+from read_core_files import parse_parameter_file, read_ultrasound_file
+from visualise_ultrasound import display_2d_ultrasound_frame
 
 
 def pol2cart(r, th):
