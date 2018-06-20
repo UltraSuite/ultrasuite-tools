@@ -105,7 +105,8 @@ def append_audio_and_video(audio_file, video_file, output_video_file):
          "-codec", "copy", "-shortest", output_video_file])
 
 
-def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video_file, frame_rate=30):
+def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video_file, frame_rate=60,
+                      background_colour=0):
     """
 
     :param prompt_file:
@@ -114,6 +115,7 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
     :param param_file:
     :param output_video_file:
     :param frame_rate:
+    :param background_colour:
     :return:
     """
 
@@ -139,13 +141,14 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
                                       number_of_vectors=int(param_df['NumVectors'].value),
                                       pixels_per_vector=int(param_df['PixPerVector'].value))
 
-    x = reduce_frame_rate(ult_3d=ult_3d, input_frame_rate=float(param_df['FramesPerSec'].value),
+    x, fps = reduce_frame_rate(ult_3d=ult_3d, input_frame_rate=float(param_df['FramesPerSec'].value),
                           output_frame_rate=frame_rate)
 
-    y = transform_raw_ult_to_world_multi_frames(x, background_colour=0)
+    print("transforming raw ultrasound to world...")
+    y = transform_raw_ult_to_world_multi_frames(x, background_colour=background_colour)
 
     # create video without audio
-    create_video(y, frame_rate, temp_video_file, title=video_caption)
+    create_video(y, fps, temp_video_file, title=video_caption)
 
     # append audio and video
     append_audio_and_video(temp_audio_file, temp_video_file, output_video_file)
@@ -154,19 +157,24 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
     os.remove(temp_audio_file)
     os.remove(temp_video_file)
 
+    print("video creation complete.")
+
 
 def main():
 
     path = sys.argv[1]
     utterance_basename = sys.argv[2]
+    output_path = sys.arg[3]
+
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
 
     prompt = os.path.join(path, utterance_basename + ".txt")
     wave = os.path.join(path, utterance_basename + ".wav")
     ultrasound = os.path.join(path, utterance_basename + ".ult")
     parameter = os.path.join(path, utterance_basename + ".param")
 
-    animate_utterance(prompt, wave, ultrasound, parameter,
-                      "testing3.avi", frame_rate=60)
+    animate_utterance(prompt, wave, ultrasound, parameter, os.path.join(output_path, "sample_video.avi"))
 
 
 if __name__ == "__main__":

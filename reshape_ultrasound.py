@@ -64,7 +64,7 @@ def reshape_ultrasound_array(ult, output_dim, number_of_vectors=63, pixels_per_v
     return np.reshape(ult, new_shape)
 
 
-def reduce_frame_rate(ult_3d, input_frame_rate=121.5, output_frame_rate=65):
+def reduce_frame_rate(ult_3d, input_frame_rate=121.5, output_frame_rate=60):
     """
     Reduce the ultrasound frame rate to make other processes more efficient.
     :param ult_3d:
@@ -72,21 +72,23 @@ def reduce_frame_rate(ult_3d, input_frame_rate=121.5, output_frame_rate=65):
     :param output_frame_rate:
     :return:
     """
-    print("reducing frame rate from " + str(input_frame_rate) + " to " + str(output_frame_rate) + "...")
+    print("reducing ultrasound frame rate from " + str(input_frame_rate) + " to " + str(output_frame_rate) + "...")
 
     if input_frame_rate < output_frame_rate:
         print("Output frame is larger than input frame. Frame rate not reduced.")
         return ult_3d
 
-    skip = input_frame_rate // output_frame_rate
+    skip = round(input_frame_rate / output_frame_rate)
 
-    y = np.empty([ult_3d.shape[0] // skip, ult_3d.shape[1], ult_3d.shape[2]])
+    indices_of_selected_frames = range(0, ult_3d.shape[0], skip)
+
+    y = np.empty([len(indices_of_selected_frames), ult_3d.shape[1], ult_3d.shape[2]])
     j = 0
-    for i in range(0, ult_3d.shape[0], skip):
+    for i in indices_of_selected_frames:
         y[j] = ult_3d[i]
         j += 1
 
-    return y
+    return y, input_frame_rate / skip
 
 
 def get_segment(waveform, start_time, end_time=None, sampling_rate=22050):
