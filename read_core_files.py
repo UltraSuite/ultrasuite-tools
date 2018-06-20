@@ -1,5 +1,13 @@
 """
-Functions to create an animation of an utterance.
+Each utterance is represented as a tuple of four files:
+
+    The prompt file: .txt
+    The audio file: .wav
+    The ultrasound file: .ult
+    The parameter file: .param
+
+This file contains functions to read each.
+
 
 Date: Dec 2017
 Author: Aciel Eshky

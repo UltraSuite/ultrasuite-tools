@@ -4,11 +4,6 @@ Functions to create an animation of an utterance.
 Date: Dec 2017
 Author: Aciel Eshky
 
-An utterance consists of a tuple of 4 files: a prompt file (.txt), an audio file (.wav), an ultrasound file (.ult) and
-ultrasound parameter file (.param).
-
-These functions use the ultrasound parameters to interpret and animate the ultrasound while synchronising it with the
-audio and displaying the original prompt.
 """
 
 # write a function to reduce ultrasound frame rate.
