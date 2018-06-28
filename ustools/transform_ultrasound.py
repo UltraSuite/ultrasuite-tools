@@ -139,27 +139,3 @@ def transform_raw_ult_to_world_multi_frames(ult_3d,
                                                   zero_offset=zero_offset,
                                                   pixels_per_mm=pixels_per_mm)
     return trans_ult
-
-
-def main():
-
-    ult_filename = sys.argv[1]      # "demo/utterance/Ultrax_02TD1M_001.ult"
-    param_filename = sys.argv[2]    # "demo/utterance/Ultrax_02TD1M_001.param"
-
-    ult = read_ultrasound_file(ult_filename)
-    param_df = parse_parameter_file(param_filename)
-
-    num_vectors = int(param_df['NumVectors'].value)
-    pixels_per_vector = int(param_df['PixPerVector'].value)
-
-    reshaped_ult = reshape_ultrasound_array(ult, output_dim=3, number_of_vectors=num_vectors,
-                                            pixels_per_vector=pixels_per_vector)
-
-    frame = transform_raw_ult_to_world(reshaped_ult[100])   # transform the 100th frame
-
-    print("Displaying ultrasound file (check plotting window)...")
-    display_2d_ultrasound_frame(frame, title="ultrasound frame number 100, after applying the geometric transform")
-
-
-if __name__ == "__main__":
-    main()

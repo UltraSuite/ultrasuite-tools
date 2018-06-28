@@ -109,25 +109,3 @@ def get_segment(signal, start_time, end_time=None, sampling_rate=22050):
         return signal[round(start_frame):]
     end_frame = sampling_rate * end_time
     return signal[round(start_frame):round(end_frame)]
-
-
-def main():
-
-    ult_filename = sys.argv[1]      # "input/sample.ult"
-    param_filename = sys.argv[2]    # "input/sample.param"
-
-    ult = read_ultrasound_file(ult_filename)
-    param_df = parse_parameter_file(param_filename)
-
-    scanlines = int(param_df['NumVectors'].value)
-    pixels_per_scanline = int(param_df['PixPerVector'].value)
-
-    reshaped_ult = reshape_ultrasound_array(ult, output_dim=3, number_of_vectors=scanlines,
-                                            pixels_per_vector=pixels_per_scanline)
-
-    print("Displaying ultrasound file (check plotting window)...")
-    display_2d_ultrasound_frame(reshaped_ult[100], title="ultrasound frame number 100")  # plot the 100th frame
-
-
-if __name__ == "__main__":
-    main()
