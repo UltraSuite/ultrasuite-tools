@@ -19,11 +19,11 @@ from ustools.reshape_ultrasound import reduce_frame_rate
 from ustools.reshape_ultrasound import reshape_ultrasound_array
 
 
-def write_images_to_disk(ult_3d, directory, title=None):
+def write_images_to_disk(ult, output_dir, title=None):
     """
     A function to write the ultrasound frames as images to a directory. The images are generated as plots without axes.
-    :param ult_3d: input ultrasound object as a 3d numpy array
-    :param directory: the directory to write the images to
+    :param ult: input ultrasound object as a 3d numpy array
+    :param output_dir: the directory to write the images to
     :param title: an optional title for the image
     :return:
     """
@@ -34,21 +34,21 @@ def write_images_to_disk(ult_3d, directory, title=None):
     if title is not None:
         plt.title(title)
 
-    c = ult_3d[0]
+    c = ult[0]
     im = plt.imshow(c.T, aspect='equal', origin='lower', cmap='gray')
-    for i in range(1, ult_3d.shape[0]):
-        c = ult_3d[i]
+    for i in range(1, ult.shape[0]):
+        c = ult[i]
         im.set_data(c.T)
         plt.axis("off")
-        plt.savefig(directory + "/%07d.jpg" % i, bbox_inches='tight')
+        plt.savefig(output_dir + "/%07d.jpg" % i, bbox_inches='tight')
 
 
-def create_video(ult_3d, frame_rate, output_video_file, title=None):
+def create_video(ult, sample_rate, output_filename, title=None):
     """
     A function to animate an ultrasound object.
-    :param ult_3d: input ultrasound object as a 3d numpy array. Can be raw or transformed.
-    :param frame_rate: taken from the ultrasound parameter file (unless the ultrasound has been down-sampled)
-    :param output_video_file: the path/name of the output video
+    :param ult: input ultrasound object as a 3d numpy array. Can be raw or transformed.
+    :param sample_rate: taken from the ultrasound parameter file (unless the ultrasound has been down-sampled)
+    :param output_filename: the path/name of the output video
     :param title: an optional title for the video
     :return:
     """
@@ -57,20 +57,20 @@ def create_video(ult_3d, frame_rate, output_video_file, title=None):
     if not os.path.exists(directory):
         os.makedirs(directory)
 
-    write_images_to_disk(ult_3d=ult_3d, directory=directory, title=title)
+    write_images_to_disk(ult=ult, output_dir=directory, title=title)
 
     print("creating video from images frames using ffmpeg...")
     subprocess.call(
-        ["ffmpeg", "-y", "-r", str(frame_rate),
+        ["ffmpeg", "-y", "-r", str(sample_rate),
          "-i", directory + "/%07d.jpg", "-vcodec", "mpeg4", "-qscale", "5", "-r",
-         str(frame_rate), output_video_file])
+         str(sample_rate), output_filename])
     print("video saved.")
 
     shutil.rmtree(directory)
     print("image frames files deleted from disk.")
 
 
-def crop_audio(audio_start_time, input_audio_file, output_audio_file):
+def crop_audio(input_audio_file, audio_start_time, output_audio_file):
     """
     A function to crop the audio. I should consider the cases where audio start time is 0 or negative
     :param audio_start_time: taken from the ultrasound parameter file: 'TimeInSecsOfFirstFrame'
@@ -126,8 +126,7 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
     param_df = parse_parameter_file(param_file=param_file)
 
     # use offset parameter to crop audio
-    crop_audio(audio_start_time=param_df['TimeInSecsOfFirstFrame'].value,
-               input_audio_file=wave_file,
+    crop_audio(input_audio_file=wave_file, audio_start_time=param_df['TimeInSecsOfFirstFrame'].value,
                output_audio_file=temp_audio_file)
 
     # read ultrasound, reshape it, reduce the frame rate for efficiency, and transform it

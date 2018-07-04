@@ -6,15 +6,9 @@ Author: Aciel Eshky
 
 """
 
-import sys
 import math
-
 import numpy as np
 from scipy import ndimage
-
-from ustools.read_core_files import parse_parameter_file, read_ultrasound_file
-from ustools.visualise_ultrasound import display_2d_ultrasound_frame
-from ustools.reshape_ultrasound import reshape_ultrasound_array
 
 
 def pol2cart(r, th):
