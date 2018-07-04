@@ -1,3 +1,10 @@
+"""
+Class UltraSuiteCore to read / process UltraSuite data.
+
+Date: Jul 2018
+Author: Aciel Eshky
+
+"""
 import os
 import io
 from datetime import datetime

@@ -8,12 +8,7 @@ Date: Mar 2018
 Author: Aciel Eshky
 
 """
-import sys
-
 import numpy as np
-
-from ustools.visualise_ultrasound import display_2d_ultrasound_frame
-from ustools.read_core_files import parse_parameter_file, read_ultrasound_file
 
 
 def reshape_ultrasound_array(ult, output_dim, number_of_vectors=63, pixels_per_vector=412):
