@@ -90,7 +90,7 @@ def reduce_frame_rate(ult_3d, input_frame_rate=121.5, output_frame_rate=60):
     return y, input_frame_rate / skip
 
 
-def get_segment(signal, start_time, end_time=None, sampling_rate=22050):
+def get_segment(signal, sampling_rate=22050, start_time=0, end_time=None):
     """
     A function to get part of the ultrasound or waveform, where start and end are specified as time
     :param signal:

@@ -42,8 +42,7 @@ class TestUltraSuiteCore(TestCase):
         self.assertEqual(core.params['zero_offset'],  51.0)
 
     def test_sync(self):
-        core = UltraSuiteCore(directory="../input/", file_basename="sample",
-                              apply_sync_param=True)
+        core = UltraSuiteCore(directory="../input/", file_basename="sample", apply_sync_param=True)
         self.assertEqual(core.basename, "sample")
         self.assertEqual(core.speaker_id, "UPX_01F_BL2")
         self.assertEqual(core.prompt, "packing Hague top guy")
@@ -62,8 +61,7 @@ class TestUltraSuiteCore(TestCase):
         self.assertEqual(core.params['zero_offset'], 51.0)
 
     def test_sync_and_skip(self):
-        core = UltraSuiteCore(directory="../input/", file_basename="sample",
-                              apply_sync_param=True, ult_frame_skip=5)
+        core = UltraSuiteCore(directory="../input/", file_basename="sample", apply_sync_param=True, ult_frame_skip=5)
         self.assertEqual(core.basename, "sample")
         self.assertEqual(core.speaker_id, "UPX_01F_BL2")
         self.assertEqual(core.prompt, "packing Hague top guy")
