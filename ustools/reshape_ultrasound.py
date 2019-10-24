@@ -14,15 +14,15 @@ import numpy as np
 def reshape_ultrasound_array(ult, output_dim, number_of_vectors=63, pixels_per_vector=412):
 
     """
-    A function to reshape a numpy array containing ultrasound input.
+    A function to reshape a numpy array containing ultrasound data.
     The function can reshape a single ultrasound frame. Accepted dimensions: {2, 3}.
     The function can also reshape multiple ultrasound frames. Accepted dimensions: {1, 2, 3}.
 
-    :param ult: ultrasound input as numpy array
+    :param ult: ultrasound data as numpy array
     :param output_dim: 1, 2, or 3
     :param number_of_vectors: number of ultrasound scan lines, usually 63
     :param pixels_per_vector: number of datapoints per scanline, usually 412
-    :return: the reshaped ultrasound input
+    :return: the reshaped ultrasound data
     """
 
     valid_dim = {1, 2, 3}
@@ -90,17 +90,3 @@ def reduce_frame_rate(ult_3d, input_frame_rate=121.5, output_frame_rate=60):
     return y, input_frame_rate / skip
 
 
-def get_segment(signal, sampling_rate=22050, start_time=0, end_time=None):
-    """
-    A function to get part of the ultrasound or waveform, where start and end are specified as time
-    :param signal:
-    :param start_time: in seconds
-    :param end_time: in seconds
-    :param sampling_rate: or frame rate
-    :return:
-    """
-    start_frame = sampling_rate * start_time
-    if end_time is None:
-        return signal[round(start_frame):]
-    end_frame = sampling_rate * end_time
-    return signal[round(start_frame):round(end_frame)]

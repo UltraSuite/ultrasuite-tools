@@ -7,8 +7,14 @@ Author: Aciel Eshky
 """
 
 import math
+import sys
+
 import numpy as np
 from scipy import ndimage
+
+from ustools.read_core_files import parse_parameter_file, read_ultrasound_file
+from ustools.reshape_ultrasound import reshape_ultrasound_array
+from ustools.visualise_ultrasound import display_2d_ultrasound_frame
 
 
 def pol2cart(r, th):
@@ -53,6 +59,7 @@ def transform_raw_ult_to_world(raw_ult_frame,
                                spline_interpolation_order=2,
                                background_colour=255,
                                num_of_vectors=63,
+                               size_of_vectors=412,
                                angle=0.038,
                                zero_offset=50,
                                pixels_per_mm=1
@@ -64,6 +71,7 @@ def transform_raw_ult_to_world(raw_ult_frame,
     :param spline_interpolation_order:
     :param background_colour:
     :param num_of_vectors:
+    :param size_of_vectors:
     :param angle:
     :param zero_offset:
     :param pixels_per_mm:
@@ -72,7 +80,13 @@ def transform_raw_ult_to_world(raw_ult_frame,
     if pixels_per_mm <= 0:
         pixels_per_mm = 1
         print("division by zero not allowed: pixels_per_mm set to 1.")
-    output_shape = (int(860 // pixels_per_mm), int(480 // pixels_per_mm))
+
+    height = math.sqrt(math.pow(size_of_vectors, 2) + math.pow(num_of_vectors, 2)) + zero_offset
+    width = height * 2
+
+    output_shape = (860 // pixels_per_mm, 480 // pixels_per_mm)
+    output_shape = (int(width // pixels_per_mm),  # 63 -> 860 round(num_of_vectors * 13.65)
+                    int(height // pixels_per_mm))  # 412 -> 480 round(num_of_vectors * 7.65)
     origin = (int(output_shape[0] // 2), 0)
 
     world_ult_frame = ndimage.geometric_transform(
@@ -95,6 +109,7 @@ def transform_raw_ult_to_world_multi_frames(ult_3d,
                                             spline_interpolation_order=2,
                                             background_colour=255,
                                             num_of_vectors=63,
+                                            size_of_vectors=412,
                                             angle=0.038,
                                             zero_offset=50,
                                             pixels_per_mm=1
@@ -105,31 +120,25 @@ def transform_raw_ult_to_world_multi_frames(ult_3d,
     :param spline_interpolation_order:
     :param background_colour:
     :param num_of_vectors:
+    :param size_of_vectors:
     :param angle:
     :param zero_offset:
     :param pixels_per_mm:
     :return:
     """
 
-    # transform the first frame to get the dimensions
-    x = transform_raw_ult_to_world(ult_3d[0],
-                                   spline_interpolation_order=spline_interpolation_order,
-                                   background_colour=background_colour,
-                                   num_of_vectors=num_of_vectors,
-                                   angle=angle,
-                                   zero_offset=zero_offset,
-                                   pixels_per_mm=pixels_per_mm)
-
-    # create an empty* numpy array (*contains nans)
-    trans_ult = np.full([ult_3d.shape[0], x.shape[0], x.shape[1]], np.nan)
+    trans_ult = []
 
     # loop to transform each frame separately
-    for i in range(0, ult_3d.shape[0]):
-        trans_ult[i] = transform_raw_ult_to_world(ult_3d[i],
-                                                  spline_interpolation_order=spline_interpolation_order,
-                                                  background_colour=background_colour,
-                                                  num_of_vectors=num_of_vectors,
-                                                  angle=angle,
-                                                  zero_offset=zero_offset,
-                                                  pixels_per_mm=pixels_per_mm)
-    return trans_ult
+    for ult in ult_3d:
+        trans_ult.append(transform_raw_ult_to_world(ult,
+                                                    spline_interpolation_order=spline_interpolation_order,
+                                                    background_colour=background_colour,
+                                                    num_of_vectors=num_of_vectors,
+                                                    size_of_vectors=size_of_vectors,
+                                                    angle=angle,
+                                                    zero_offset=zero_offset,
+                                                    pixels_per_mm=pixels_per_mm))
+
+    return np.array(trans_ult)
+

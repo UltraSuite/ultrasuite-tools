@@ -14,11 +14,11 @@ Author: Aciel Eshky
 
 """
 
-import io
-from datetime import datetime
 import numpy as np
 import pandas as pd
 from scipy.io import wavfile
+import io
+from datetime import datetime
 
 
 def parse_prompt_file(prompt_file):
@@ -58,7 +58,7 @@ def parse_parameter_file(param_file):
     TimeInSecsOfFirstFrame      0.49265     the synchronisation offset in seconds relative to the audio
 
     :param param_file: the name of the parameter file. This ends with extension .param and is a text file.
-    :return: a input frame containing the value of each parameter in a separate column
+    :return: a data frame containing the value of each parameter in a separate column
     """
 
     return pd.read_table(param_file, sep='=', index_col=0, names=["value"]).transpose()
