@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='ustools',
-    version='0.2dev',
+    version='0.3',
     packages=find_packages(exclude=['tests*']),
     license='Apache License v.2',
     description='Tools to process the UltraSuite data',
