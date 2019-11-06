@@ -13,9 +13,8 @@ import subprocess
 import matplotlib.pyplot as plt
 
 from ustools.read_core_files import *
-from ustools.reshape_ultrasound import reduce_frame_rate
-from ustools.reshape_ultrasound import reshape_ultrasound_array
-from ustools.transform_ultrasound import transform_raw_ult_to_world_multi_frames
+from ustools.ultrasound_utils import reduce_frame_rate
+from ustools.transform_ultrasound import transform_ultrasound
 
 
 def write_images_to_disk(ult_3d, directory, title=None, aspect='auto'):
@@ -28,7 +27,7 @@ def write_images_to_disk(ult_3d, directory, title=None, aspect='auto'):
     """
     print("writing image frames to disk...")
 
-    plt.figure(dpi=300)
+    plt.figure(dpi=300, figsize=(5, 5))
 
     if title is not None:
         plt.title(title)
@@ -102,8 +101,8 @@ def append_audio_and_video(audio_file, video_file, output_video_file):
          "-codec", "copy", "-shortest", output_video_file])
 
 
-def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video_filename="out.avi", frame_rate=60,
-                      background_colour=0):
+def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video_filename="out.avi", frame_rate=24,
+                      background_colour=255, aspect='equal'):
     """
 
     :param prompt_file:
@@ -113,6 +112,7 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
     :param output_video_filename:
     :param frame_rate: the video frame rate. This will be different to the ultrasound framerate
     :param background_colour: black = 0 and white = 255
+    :param aspect
     :return:
     """
 
@@ -121,7 +121,7 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
     temp_video_file = "video_only.avi"
 
     # prompt file is used for a video caption
-    video_caption = prompt_file#', '.join(parse_prompt_file(prompt_file))
+    video_caption = parse_prompt_file(prompt_file)[0]
 
     # read parameter file
     param_df = parse_parameter_file(param_file=param_file)
@@ -134,18 +134,18 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
     # read ultrasound, reshape it, reduce the frame rate for efficiency, and transform it
     ult = read_ultrasound_file(ult_file=ult_file)
 
-    ult_3d = reshape_ultrasound_array(ult, output_dim=3,
-                                      number_of_vectors=int(param_df['NumVectors'].value),
-                                      pixels_per_vector=int(param_df['PixPerVector'].value))
+    ult_3d = ult.reshape(-1, int(param_df['NumVectors'].value), int(param_df['PixPerVector'].value))
 
     x, fps = reduce_frame_rate(ult_3d=ult_3d, input_frame_rate=float(param_df['FramesPerSec'].value),
                                output_frame_rate=frame_rate)
 
     print("transforming raw ultrasound to world...")
-    y = transform_raw_ult_to_world_multi_frames(x, background_colour=background_colour)
+    y = transform_ultrasound(x, background_colour=background_colour, num_scanlines=int(param_df['NumVectors'].value),
+                             size_scanline=int(param_df['PixPerVector'].value), angle=float(param_df['Angle'].value),
+                             zero_offset=int(param_df['ZeroOffset'].value), pixels_per_mm=3)
 
     # create video without audio
-    create_video(y, fps, temp_video_file, title=video_caption)
+    create_video(y, fps, temp_video_file, title=video_caption, aspect=aspect)
 
     # append audio and video
     append_audio_and_video(temp_audio_file, temp_video_file, output_video_filename)
@@ -154,10 +154,10 @@ def animate_utterance(prompt_file, wave_file, ult_file, param_file, output_video
     os.remove(temp_audio_file)
     os.remove(temp_video_file)
 
-    print("video creation complete.")
+    print("Creation of video", output_video_filename, "complete.")
 
 
-def animate_core_utterance(core, output_video_filename="out.avi", aspect='auto'):
+def animate_core_utterance(core, output_video_filename="out.avi", aspect='equal'):
     """
     A function to animate an utterance as a core object.
     :param core:
@@ -187,4 +187,4 @@ def animate_core_utterance(core, output_video_filename="out.avi", aspect='auto')
     os.remove(temp_audio_file)
     os.remove(temp_video_file)
 
-    print("video creation complete.")
+    print("Creation of video", output_video_filename, "complete.")

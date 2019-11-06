@@ -14,11 +14,11 @@ Author: Aciel Eshky
 
 """
 
+import io
+from datetime import datetime
 import numpy as np
 import pandas as pd
 from scipy.io import wavfile
-import io
-from datetime import datetime
 
 
 def parse_prompt_file(prompt_file):

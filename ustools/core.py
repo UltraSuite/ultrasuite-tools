@@ -16,7 +16,7 @@ from skimage.measure import block_reduce
 from skimage.transform import resize
 
 from ustools.segment_signal import get_segment, get_zero_regions
-from ustools.transform_ultrasound import transform_raw_ult_to_world_multi_frames
+from ustools.transform_ultrasound import transform_ultrasound
 from ustools.voice_activity_detection import detect_voice_activity, separate_silence_and_speech
 
 
@@ -238,12 +238,9 @@ class UltraSuiteCore:
             print("ultrasound has been down-sampled. No transform applied.")
 
         elif not self.params['ult_frame_resized'] and not self.params['ult_transformed']:
-            self.ult_t = transform_raw_ult_to_world_multi_frames(self.ult,
-                                                                 num_of_vectors=self.params['num_scanlines'],
-                                                                 size_of_vectors=self.params['size_scanline'],
-                                                                 angle=self.params['angle'],
-                                                                 zero_offset=self.params['zero_offset'],
-                                                                 pixels_per_mm=3)
+            self.ult_t = transform_ultrasound(self.ult, num_scanlines=self.params['num_scanlines'],
+                                              size_scanline=self.params['size_scanline'], angle=self.params['angle'],
+                                              zero_offset=self.params['zero_offset'], pixels_per_mm=3)
             self.params['ult_transformed'] = True
 
     def resize_ult_frames_by_ratio(self, ratio=(1, 3), func=np.mean):
